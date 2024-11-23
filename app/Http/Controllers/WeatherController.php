@@ -32,24 +32,20 @@ class WeatherController extends Controller
     public function saveAction(Request $request): string
     {
         $cityName = $request->post('city_name');
-        $weather = Weather::where('city_name', $cityName)->first();
-        if (!$weather) {
-            $weather = new Weather();
-        }
-
-        $map = [
-            'city_name' => $request->post('city_name'),
-            'timestamp_dt' => $request->post('timestamp_dt'),
-            'min_tmp' => $request->post('min_tmp'),
-            'max_tmp' => $request->post('max_tmp'),
-            'wind_spd' => $request->post('wind_spd'),
-        ];
-
-        $weather->fill($map)->save();
+        $weather = Weather::updateOrCreate(
+            ['city_name' => $cityName],
+            [
+                'city_name' => $cityName,
+                'timestamp_dt' => $request->post('timestamp_dt'),
+                'min_tmp' => $request->post('min_tmp'),
+                'max_tmp' => $request->post('max_tmp'),
+                'wind_spd' => $request->post('wind_spd'),
+            ]
+        );
 
         return json_encode([
             'success' => true,
-            'weather' => $map,
+            'weathers' => [$weather->toArray()],
         ]);
     }
 }

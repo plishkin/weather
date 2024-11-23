@@ -1,7 +1,6 @@
 import { IResponse } from './IResponse';
 import { IWeather } from '../models/IWeather';
 
-export interface IWeatherResponse extends IResponse {
-  success: boolean;
+export interface IWeathersResponse extends IResponse {
   weathers: IWeather[];
 }

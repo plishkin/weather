@@ -78,6 +78,7 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
                 weathers={weathers}
                 setLoading={setLoading}
                 setAlert={setAlert}
+                setWeathers={setWeathers}
               />
               <WeathersBlock weathers={weathers} />
             </>

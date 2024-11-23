@@ -27,6 +27,7 @@ class Weather extends Model
     }
 
     protected $visible = [
+        'updated_at',
         'timestamp_dt',
         'city_name',
         'min_tmp',
