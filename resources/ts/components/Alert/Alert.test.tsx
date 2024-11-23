@@ -1,12 +1,16 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Alert from './Alert';
 
-describe('Loader', () => {
-  it('renders the Loader component', () => {
-    render(<Alert />);
-
-    // screen.debug(); // prints out the jsx in the App component unto the command line
+describe('Alert', () => {
+  it('renders the Alert component', async () => {
+    let container: HTMLElement = null;
+    await act(async () => {
+      container = render(
+        <Alert text="AAA" type="danger" dismissible={true} />
+      ).container;
+    });
+    expect(container.getElementsByClassName('alert').length).toBe(1);
   });
 });
