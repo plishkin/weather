@@ -1,10 +1,6 @@
-## Simple sample application that shows currency rate
+## Simple sample application that forecasts the weather
 
-![scrrenshot](https://raw.githubusercontent.com/plishkin/currency/main/screenshot.png)
-
-### Interaction diagram
-
-![diagram](https://raw.githubusercontent.com/plishkin/currency/main/diagram.svg)
+![scrrenshot](https://raw.githubusercontent.com/plishkin/weather/refs/heads/main/screenshot.png)
 
 ### Uses
 
@@ -20,13 +16,13 @@
 ### Clone the project with git
 
 ```bash
-git clone https://github.com/plishkin/currency.git
+git clone https://github.com/plishkin/weather.git
 ```
 
 Go to the cloned project folder
 
 ```bash
-cd currency
+cd weather
 ```
 
 Copy and configure .env file
@@ -35,6 +31,13 @@ by default APP_PORT is 8082
 
 ```bash
 cp .env.example .env
+```
+
+Add your Openweathermap API appid to the key OPENWEATHERMAPID in .env file
+For ex.
+
+```
+OPENWEATHERMAPID=myappidkey
 ```
 
 
