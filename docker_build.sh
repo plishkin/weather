@@ -2,7 +2,7 @@
 
 docker compose build
 docker compose up -d mysql
-sleep 5
+sleep 7
 docker compose up -d laravel.test
 
 docker compose exec laravel.test composer install --optimize-autoloader --ignore-platform-reqs
