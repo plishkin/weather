@@ -11,12 +11,10 @@ class OpenWeatherMapConnector
 
     public static function getCityWeathers(string $cityName): bool|array
     {
-//        $appId = config('app.openweathermap.app_id');
-//        $cityNameUrlEncoded = urlencode($cityName);
-//        $url = self::$url . "?appid={$appId}&units=metric&q={$cityNameUrlEncoded}";
-//        $content = @file_get_contents($url);
-
-        $content = @file_get_contents(__DIR__ . '/111.json');
+        $appId = config('app.openweathermap.app_id');
+        $cityNameUrlEncoded = urlencode($cityName);
+        $url = self::$url . "?appid={$appId}&units=metric&q={$cityNameUrlEncoded}";
+        $content = @file_get_contents($url);
 
         $weatherCast = json_decode($content, true);
 
