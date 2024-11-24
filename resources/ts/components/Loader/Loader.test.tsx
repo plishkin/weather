@@ -10,6 +10,7 @@ describe('Loader', () => {
     await act(async () => {
       container = render(<Loader />).container;
     });
+    expect(container.getElementsByClassName('loader-cont').length).toBe(1);
     expect(container.getElementsByClassName('loader').length).toBe(1);
   });
 });

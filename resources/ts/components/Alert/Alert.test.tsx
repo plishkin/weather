@@ -12,5 +12,7 @@ describe('Alert', () => {
       ).container;
     });
     expect(container.getElementsByClassName('alert').length).toBe(1);
+    expect(container.getElementsByClassName('alert-text').length).toBe(1);
+    expect(container.getElementsByClassName('btn-close').length).toBe(1);
   });
 });

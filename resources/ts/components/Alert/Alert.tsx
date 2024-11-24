@@ -27,7 +27,8 @@ const Alert: React.FunctionComponent<IAlert> = (props: IAlert) => {
       }
       role="alert"
     >
-      {props.text}
+      <div className="alert-text">{props.text}</div>
+
       {props.dismissible && (
         <button
           type="button"
