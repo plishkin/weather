@@ -45,6 +45,7 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
               <span
                 className="btn btn-primary mb-3 w-100"
                 onClick={() => {
+                  setAlert(null);
                   setLoading(true);
                   getApiWeather(cityName).then(weathers => {
                     setLoading(false);
@@ -59,6 +60,7 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
               <span
                 className="btn btn-warning mb-3 w-100"
                 onClick={() => {
+                  setAlert(null);
                   setLoading(true);
                   getDbWeather(cityName).then(weathers => {
                     setLoading(false);
