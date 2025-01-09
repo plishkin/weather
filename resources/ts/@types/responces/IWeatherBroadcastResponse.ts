@@ -1,6 +1,6 @@
-import { IResponse } from './IResponse';
-import { IWeather } from '../models/IWeather';
+import IResponse from './IResponse';
+import IWeather from '../models/IWeather';
 
-export interface IWeatherBroadcastResponse extends IResponse {
+export default interface IWeatherBroadcastResponse extends IResponse {
   weathers: IWeather[];
 }

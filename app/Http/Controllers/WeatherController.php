@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CityNameRequest;
+use App\Http\Requests\WeatherSaveRequest;
 use App\Jobs\ProcessWeatherJob;
 use App\Models\Weather;
 use Illuminate\Http\Request;
 
 class WeatherController extends Controller
 {
-    public function apiAction(Request $request): string
+    public function apiAction(CityNameRequest $request): string
     {
-        $cityName = $request->post('cityName') . '';
-        ProcessWeatherJob::dispatch($cityName);
+        $validatedData = $request->validated();
+        ProcessWeatherJob::dispatch($validatedData['cityName']);
         return json_encode([
             'success' => true,
         ]);
     }
 
-    public function dbAction(Request $request): string
+    public function dbAction(CityNameRequest $request): string
     {
-        $cityName = $request->post('cityName') . '';
-
-        $weathers = Weather::where('city_name', $cityName)->get()->toArray();
+        $validatedData = $request->validated();
+        $weathers = Weather::where('city_name', $validatedData['cityName'])->get()->toArray();
 
         return json_encode([
             'success' => true,
@@ -29,18 +30,12 @@ class WeatherController extends Controller
         ]);
     }
 
-    public function saveAction(Request $request): string
+    public function saveAction(WeatherSaveRequest $request): string
     {
-        $cityName = $request->post('city_name');
+        $validatedWeather = $request->validated();
         $weather = Weather::updateOrCreate(
-            ['city_name' => $cityName],
-            [
-                'city_name' => $cityName,
-                'timestamp_dt' => $request->post('timestamp_dt'),
-                'min_tmp' => $request->post('min_tmp'),
-                'max_tmp' => $request->post('max_tmp'),
-                'wind_spd' => $request->post('wind_spd'),
-            ]
+            ['city_name' => $validatedWeather['city_name']],
+            $validatedWeather
         );
 
         return json_encode([

@@ -1,17 +1,23 @@
 import React from 'react';
 import './Alert.scss';
 
-export interface IAlert {
-  text: string | undefined | null;
-  type:
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'danger'
-    | 'warning'
-    | 'info'
-    | 'light'
-    | 'dark';
+export interface IShortAlert {
+  text: string;
+  list?: string[];
+}
+
+export type TAlertType =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'danger'
+  | 'warning'
+  | 'info'
+  | 'light'
+  | 'dark';
+
+export interface IAlert extends IShortAlert {
+  type: TAlertType;
   dismissible?: boolean;
 }
 
@@ -36,6 +42,14 @@ const Alert: React.FunctionComponent<IAlert> = (props: IAlert) => {
           data-bs-dismiss="alert"
           aria-label="Close"
         ></button>
+      )}
+
+      {props.list?.length > 0 && (
+        <ul className="m-0">
+          {props.list.map(string => (
+            <li key={string}>{string}</li>
+          ))}
+        </ul>
       )}
     </div>
   );

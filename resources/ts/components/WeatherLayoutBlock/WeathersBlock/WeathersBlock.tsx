@@ -1,7 +1,7 @@
 import './WeathersBlock.scss';
 import React from 'react';
 import WeatherBlock from './WeatherBlock/WeatherBlock';
-import { IWeather } from '../../../@types/models/IWeather';
+import IWeather from '../../../@types/models/IWeather';
 
 interface CurrenciesBlockBlockProps {
   weathers: IWeather[];

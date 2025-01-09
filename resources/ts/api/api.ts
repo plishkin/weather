@@ -1,34 +1,39 @@
 import axios from 'axios';
-import { useBroadcast } from '../hooks/useBroadcast';
-import { IWeather } from '../@types/models/IWeather';
-import { IWeatherBroadcastResponse } from '../@types/responces/IWeatherBroadcastResponse';
-import { IWeathersResponse } from '../@types/responces/IWeathersResponse';
-import { IResponse } from '../@types/responces/IResponse';
+import useBroadcast from '../hooks/useBroadcast';
+import IWeather from '../@types/models/IWeather';
+import IWeatherBroadcastResponse from '../@types/responces/IWeatherBroadcastResponse';
+import IWeathersResponse from '../@types/responces/IWeathersResponse';
+import { sendPostRequest } from './utils';
 
-export const getApiWeather: (cityName: string) => Promise<IWeather[]> = (
-  cityName: string
+export const getApiWeather = async (
+  cityName: string,
+  broadcastHandler: (resp: IWeatherBroadcastResponse) => void
 ) => {
   const { listen } = useBroadcast();
 
-  return new Promise((resolve, reject) => {
-    axios.post('/weather/api', { cityName }).then(resp => {
-      listen('weather', 'WeatherBroadcastEvent', (data: object) => {
-        resolve((data as IWeatherBroadcastResponse).weathers);
-      });
-    });
+  return sendPostRequest({
+    url: '/weather/api',
+    data: { cityName }
+  }).then(response => {
+    if (response.success) {
+      listen('weather', 'WeatherBroadcastEvent', broadcastHandler);
+    }
+    return response;
   });
 };
 
 export const getDbWeather = (cityName: string) => {
-  return axios
-    .post('/weather/db', { cityName })
-    .then(resp => (resp.data as IWeathersResponse).weathers);
+  return sendPostRequest({
+    url: '/weather/db',
+    data: { cityName }
+  }).then(resp => resp as IWeathersResponse);
 };
 
 export const saveWeather: (weather: IWeather) => Promise<IWeathersResponse> = (
   weather: IWeather
 ) => {
-  return axios
-    .post('/weather/save', { ...weather })
-    .then(resp => resp.data as IWeathersResponse);
+  return sendPostRequest({
+    url: '/weather/save',
+    data: { ...weather }
+  }).then(resp => resp as IWeathersResponse);
 };

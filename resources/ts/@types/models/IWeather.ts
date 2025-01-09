@@ -1,4 +1,4 @@
-export interface IWeather {
+export default interface IWeather {
   updated_at: number;
   timestamp_dt: number;
   city_name: string;

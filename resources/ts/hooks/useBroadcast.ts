@@ -1,9 +1,9 @@
-import Pusher from 'pusher-js';
 import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 
 declare global {
   interface Window {
-    Echo: Echo;
+    Echo: Echo<any>;
     Pusher: any;
   }
 }
@@ -20,7 +20,7 @@ const init = () => {
     forceTLS: (env.VITE_REVERB_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss']
   };
-  window.Echo = new Echo(options);
+  window.Echo = new Echo(<any>options);
 };
 
 const register = (
@@ -31,7 +31,7 @@ const register = (
   window.Echo.connector.listen(name, event, (data: object) => callBack(data));
 };
 
-export const useBroadcast = () => {
+const useBroadcast = () => {
   const listen = (
     name: string,
     event: string,
@@ -46,3 +46,5 @@ export const useBroadcast = () => {
     listen
   };
 };
+
+export default useBroadcast;

@@ -1,3 +1,3 @@
-export interface IResponse {
+export default interface IResponse {
   success: boolean;
 }

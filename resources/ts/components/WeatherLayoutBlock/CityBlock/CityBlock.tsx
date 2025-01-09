@@ -1,8 +1,10 @@
 import './CityBlock.scss';
 import React from 'react';
 import { saveWeather } from '../../../api/api';
-import { IWeather } from '../../../@types/models/IWeather';
+import IWeather from '../../../@types/models/IWeather';
 import { IAlert } from '../../Alert/Alert';
+import { failAlert } from '../../_utils/alerts';
+import IFailResponse from '../../../@types/responces/IFailResponse';
 
 interface CityBlockProps {
   weathers: IWeather[];
@@ -58,13 +60,10 @@ const CityBlock: React.FunctionComponent<CityBlockProps> = (
                       });
                     }
                   })
-                  .catch(er => {
-                    props.setAlert({
-                      text: String(er),
-                      type: 'danger',
-                      dismissible: true
-                    });
-                  });
+                  .catch(e => {
+                    props.setAlert(failAlert(e.response.data as IFailResponse));
+                  })
+                  .finally(() => props.setLoading(false));
               }}
             >
               Save forecast
