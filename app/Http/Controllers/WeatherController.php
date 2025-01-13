@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CityNameRequest;
 use App\Http\Requests\WeatherSaveRequest;
 use App\Jobs\ProcessWeatherJob;
-use App\Models\Weather;
-use Illuminate\Http\Request;
+use App\Services\WeatherService;
 
 class WeatherController extends Controller
 {
@@ -19,28 +18,46 @@ class WeatherController extends Controller
         ]);
     }
 
-    public function dbAction(CityNameRequest $request): string
+    public function dbAction(CityNameRequest $request, WeatherService $weatherService): string
     {
-        $validatedData = $request->validated();
-        $weathers = Weather::where('city_name', $validatedData['cityName'])->get()->toArray();
+        $weather = null;
+        $error = null;
+
+        try {
+            $validatedData = $request->validated();
+            $cityName = $validatedData['cityName'];
+            $weather = $weatherService->getWeatherByCity($cityName);
+            if (!$weather) {
+                $error = "Weather for city \"$cityName\" not found";
+            }
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+        }
 
         return json_encode([
-            'success' => true,
-            'weathers' => $weathers,
+            'success' => !$error,
+            'weather' => $weather,
+            'error' => $error,
         ]);
     }
 
-    public function saveAction(WeatherSaveRequest $request): string
+    public function saveAction(WeatherSaveRequest $request, WeatherService $weatherService): string
     {
-        $validatedWeather = $request->validated();
-        $weather = Weather::updateOrCreate(
-            ['city_name' => $validatedWeather['city_name']],
-            $validatedWeather
-        );
+        $weather = null;
+        $error = null;
+
+        try {
+            $validatedWeather = $request->validated();
+            $cityName = $validatedWeather['city_name'];
+            $weather = $weatherService->saveWeatherByCity($cityName, $validatedWeather)->toArray();
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+        }
 
         return json_encode([
-            'success' => true,
-            'weathers' => [$weather->toArray()],
+            'success' => !$error,
+            'weather' => $weather,
+            'error' => $error,
         ]);
     }
 }

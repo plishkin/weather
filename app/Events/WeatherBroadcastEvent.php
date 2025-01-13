@@ -13,7 +13,9 @@ class WeatherBroadcastEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
-        private array $weathers,
+        private readonly string  $cityName,
+        private readonly array   $weathers,
+        private readonly ?string $error = null,
     )
     {
         //
@@ -27,7 +29,9 @@ class WeatherBroadcastEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
+            'cityName' => $this->cityName,
             'weathers' => $this->weathers,
+            'error' => $this->error,
         ];
     }
 }

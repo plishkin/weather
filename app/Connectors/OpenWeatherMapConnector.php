@@ -2,42 +2,80 @@
 
 namespace App\Connectors;
 
+use App\Exceptions\WeatherServerResponseException;
 use App\Models\Weather;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
-class OpenWeatherMapConnector
+class OpenWeatherMapConnector extends AbstractWeatherConnector
 {
 
-    private static string $url = 'http://api.openweathermap.org/data/2.5/forecast';
+    protected $url = 'http://api.openweathermap.org/data/2.5/forecast';
 
-    public static function getResponse(string $cityName): false|string
+    public function getResponse(array $queryParams = []): ResponseInterface
     {
-        $appId = config('app.openweathermap.app_id');
-        $cityNameUrlEncoded = urlencode($cityName);
-        $url = self::$url . "?appid={$appId}&units=metric&q={$cityNameUrlEncoded}";
-        return @file_get_contents($url);
+
+        $query = [
+            'appid' => config('app.openweathermap.app_id'),
+            'units' => 'metric',
+        ];
+
+        return $this->getClient()->get($this->url, [
+            'query' => array_merge($query, $queryParams)
+        ]);
     }
 
-    public static function getCityWeathers(string $cityName): bool|array
+    /**
+     * @throws GuzzleException
+     * @throws WeatherServerResponseException
+     */
+    public function getCityWeathersResponseJson(string $cityName)
     {
-        $content = self::getResponse($cityName);
+        $queryParams = [
+            'q' => $cityName,
+        ];
+        $response = $this->getResponse($queryParams);
+        $statusCode = $response->getStatusCode();
+        $content = $response->getBody()->getContents();
+        $json = json_decode($content);
+        if ($statusCode !== 200) {
+            throw new WeatherServerResponseException(
+                "Server \"{$this->url}\" failed with status code {$statusCode}",
+                $statusCode
+            );
+        }
+        return $json;
+    }
 
-        $weatherCast = json_decode($content, true);
+    public function getCityWeathers(string $cityName): array
+    {
+        $json = $this->getCityWeathersResponseJson($cityName);
+        return $this->jsonToWeathers($json);
+    }
 
+    public function jsonToWeathers(\stdClass $json): array
+    {
         $weathers = [];
-        $city = $weatherCast['city']['name'];
-        if (is_array($weatherCast['list'] ?? false)) {
-            foreach ($weatherCast['list'] as $item) {
-                $weathers[] = [
-                    'city_name' => $city,
-                    'timestamp_dt' => $item['dt'],
-                    'min_tmp' => $item['main']['temp_min'],
-                    'max_tmp' => $item['main']['temp_max'],
-                    'wind_spd' => $item['wind']['speed'],
-                ];
+        $cityName = $json->city?->name;
+        if (is_array($json->list)) {
+            foreach ($json->list as $item) {
+                $weathers[] = $this->itemToWeather($cityName, $item);
             }
         }
-
         return $weathers;
+    }
+
+    public function itemToWeather(string $cityName, \stdClass $item): Weather
+    {
+        $weather = new Weather();
+        $weather->fill([
+            'city_name' => $cityName,
+            'timestamp_dt' => (int)$item->dt,
+            'min_tmp' => (float)$item->main?->temp_min,
+            'max_tmp' => (float)$item->main?->temp_max,
+            'wind_spd' => (float)$item->wind?->speed,
+        ]);
+        return $weather;
     }
 
 }

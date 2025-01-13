@@ -6,7 +6,6 @@ import { getApiWeather, getDbWeather } from '../../api/api';
 import CityBlock from './CityBlock/CityBlock';
 import IWeather from '../../@types/models/IWeather';
 import Alert, { IAlert } from '../Alert/Alert';
-import IWeathersResponse from '../../@types/responces/IWeathersResponse';
 import IFailResponse from '../../@types/responces/IFailResponse';
 import { failAlert } from '../_utils/alerts';
 
@@ -18,6 +17,16 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
 
   const jacketClass = 'text-' + (weathers.length > 0 ? 'danger' : 'primary');
 
+  const setDismissibleAlert = (alert: IAlert) => {
+    const al: IAlert = {
+      dismissible: true,
+      dismiss: () => {
+        setAlert(null);
+      },
+      ...alert
+    };
+    setAlert(al);
+  };
   return (
     <div>
       <h2 className="text-center fst-italic mb-4 mt-3">
@@ -46,8 +55,16 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
                 setAlert(null);
                 setLoading(true);
                 getApiWeather(cityName, resp => {
-                  if (resp.weathers) setWeathers(resp.weathers);
-                  setAlert(null);
+                  if (resp.error) {
+                    setAlert({
+                      text: resp.error,
+                      type: 'danger'
+                    });
+                  }
+                  if (resp.weathers?.length > 0) {
+                    setWeathers(resp.weathers);
+                    setAlert(null);
+                  }
                   setLoading(false);
                 })
                   .then(resp => {
@@ -75,7 +92,15 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
                 setLoading(true);
                 getDbWeather(cityName)
                   .then(resp => {
-                    if (resp.success) setWeathers(resp.weathers || []);
+                    if (resp.weather) {
+                      setWeathers([resp.weather]);
+                    }
+                    if (resp.error) {
+                      setAlert({
+                        text: resp.error,
+                        type: 'danger'
+                      });
+                    }
                   })
                   .catch(e => {
                     setAlert(failAlert(e.response.data as IFailResponse));
@@ -99,7 +124,7 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
             <CityBlock
               weathers={weathers}
               setLoading={setLoading}
-              setAlert={setAlert}
+              setAlert={setDismissibleAlert}
               setWeathers={setWeathers}
             />
             <WeathersBlock weathers={weathers} />

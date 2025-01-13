@@ -2,14 +2,17 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\WeatherServerResponseException;
+use App\Services\WeatherApiService;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
-use App\Connectors\OpenWeatherMapConnector;
 use App\Events\WeatherBroadcastEvent;
 
 class ProcessWeatherJob implements ShouldQueue, ShouldBeUnique
@@ -20,7 +23,7 @@ class ProcessWeatherJob implements ShouldQueue, ShouldBeUnique
      * Create a new job instance.
      */
     public function __construct(
-        private string $cityName,
+        private readonly string $cityName,
     )
     {
         //
@@ -29,9 +32,28 @@ class ProcessWeatherJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(WeatherApiService $weatherApiService): void
     {
-        $weathers = OpenWeatherMapConnector::getCityWeathers($this->cityName);
-        WeatherBroadcastEvent::dispatch($weathers);
+        $weathers = [];
+        $error = null;
+        try {
+            $weathers = $weatherApiService->getOpenWeatherCityWeathers($this->cityName);
+        } catch (WeatherServerResponseException $e) {
+            $message = $e->getMessage();
+            $error = $message;
+            report($e);
+        } catch (GuzzleException $e) {
+            $message = $e->getMessage();
+            if ($e instanceof RequestException) {
+                $content = $e->getResponse()?->getBody()?->getContents();
+                if ($content) {
+                    $json = json_decode($content);
+                    $message = $json->message ?: $message;
+                }
+            }
+            $error = $message;
+            report($e);
+        }
+        WeatherBroadcastEvent::dispatch($this->cityName, $weathers, $error ?: null);
     }
 }

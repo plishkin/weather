@@ -2,7 +2,7 @@ import axios from 'axios';
 import useBroadcast from '../hooks/useBroadcast';
 import IWeather from '../@types/models/IWeather';
 import IWeatherBroadcastResponse from '../@types/responces/IWeatherBroadcastResponse';
-import IWeathersResponse from '../@types/responces/IWeathersResponse';
+import IWeatherResponse from '../@types/responces/IWeatherResponse';
 import { sendPostRequest } from './utils';
 
 export const getApiWeather = async (
@@ -26,14 +26,14 @@ export const getDbWeather = (cityName: string) => {
   return sendPostRequest({
     url: '/weather/db',
     data: { cityName }
-  }).then(resp => resp as IWeathersResponse);
+  }).then(resp => resp as IWeatherResponse);
 };
 
-export const saveWeather: (weather: IWeather) => Promise<IWeathersResponse> = (
+export const saveWeather: (weather: IWeather) => Promise<IWeatherResponse> = (
   weather: IWeather
 ) => {
   return sendPostRequest({
     url: '/weather/save',
     data: { ...weather }
-  }).then(resp => resp as IWeathersResponse);
+  }).then(resp => resp as IWeatherResponse);
 };

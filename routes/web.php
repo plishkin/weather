@@ -6,8 +6,8 @@ use App\Http\Controllers\WeatherController;
 
 Route::get('/', [AppController::class, 'index']);
 
-Route::controller(WeatherController::class)->group(function () {
-    Route::post('/weather/api', 'apiAction');
-    Route::post('/weather/db', 'dbAction');
-    Route::post('/weather/save', 'saveAction');
+Route::prefix('weather')->controller(WeatherController::class)->group(function () {
+    Route::post('/api', 'apiAction');
+    Route::post('/db', 'dbAction');
+    Route::post('/save', 'saveAction');
 });

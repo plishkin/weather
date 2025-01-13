@@ -19,6 +19,7 @@ export type TAlertType =
 export interface IAlert extends IShortAlert {
   type: TAlertType;
   dismissible?: boolean;
+  dismiss?: () => void;
 }
 
 const Alert: React.FunctionComponent<IAlert> = (props: IAlert) => {
@@ -41,6 +42,13 @@ const Alert: React.FunctionComponent<IAlert> = (props: IAlert) => {
           className="btn-close"
           data-bs-dismiss="alert"
           aria-label="Close"
+          onClick={e => {
+            if (props.dismiss) {
+              e.preventDefault();
+              e.stopPropagation();
+              props.dismiss();
+            }
+          }}
         ></button>
       )}
 

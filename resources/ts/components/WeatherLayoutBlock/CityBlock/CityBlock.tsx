@@ -51,7 +51,7 @@ const CityBlock: React.FunctionComponent<CityBlockProps> = (
                         type: 'success',
                         dismissible: true
                       });
-                      props.setWeathers(resp.weathers);
+                      props.setWeathers([resp.weather]);
                     } else {
                       props.setAlert({
                         text: 'There were error saving weather',

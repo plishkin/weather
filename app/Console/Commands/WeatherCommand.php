@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Connectors\OpenWeatherMapConnector;
 use App\Jobs\ProcessWeatherJob;
 use Illuminate\Console\Command;
 
@@ -25,9 +24,8 @@ class WeatherCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
-//        $weathers = OpenWeatherMapConnector::getCityWeathers($this->argument('cityName'));
         ProcessWeatherJob::dispatch($this->argument('cityName'));
     }
 }
