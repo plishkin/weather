@@ -1,8 +1,7 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Loader from './Loader';
-import WeatherLayoutBlock from '../WeatherLayoutBlock/WeatherLayoutBlock';
 
 describe('Loader', () => {
   it('renders the Loader component', async () => {
