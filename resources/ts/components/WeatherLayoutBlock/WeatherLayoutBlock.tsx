@@ -20,9 +20,7 @@ const WeatherLayoutBlock: React.FunctionComponent = () => {
   const setDismissibleAlert = (alert: IAlert) => {
     const al: IAlert = {
       dismissible: true,
-      dismiss: () => {
-        setAlert(null);
-      },
+      dismiss: () => setAlert(null),
       ...alert
     };
     setAlert(al);

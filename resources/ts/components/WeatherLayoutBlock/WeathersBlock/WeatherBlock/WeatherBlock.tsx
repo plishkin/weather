@@ -1,6 +1,6 @@
 import './WeatherBlock.scss';
 import React from 'react';
-import { IWeather } from '../../../../models/IWeather';
+import IWeather from '../../../../@types/models/IWeather';
 
 interface WeatherBlockProps {
   idx: number;
@@ -24,7 +24,7 @@ const WeatherBlock: React.FunctionComponent<WeatherBlockProps> = (
         <strong title={String(w.max_tmp)}>{w.max_tmp}°C</strong>
       </td>
       <td>
-        <strong title={String(w.wind_spd)}>{w.wind_spd}km/h</strong>
+        <strong title={String(w.wind_spd)}>{w.wind_spd}m/s</strong>
       </td>
     </tr>
   );
